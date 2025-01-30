@@ -24,7 +24,7 @@ export function reducedFromUnsignedTx(unsignedTx) {
 	return ReducedTransaction.from_unsigned_tx(
 		wasmUnsignedTx,
 		inputBoxes,
-		ErgoBoxes.empty(),
+		dataBoxes,
 		context
 	);
 }
@@ -43,7 +43,7 @@ export const fakeUserBox = {
 const userChangeAddress = '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU';
 const height = 1000;
 
-export function pay01ErgFromAddress(address) {
+export function pay01ErgFromAddress(address = userChangeAddress) {
 	const unsignedTx = new TransactionBuilder(height)
 	.from([fakeUserBox])
 	.payFee(RECOMMENDED_MIN_FEE_VALUE)
