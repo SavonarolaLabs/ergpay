@@ -27,14 +27,21 @@ app.get("/", (req, res) => {
 });
 
 
-function base64urlEncode(data) {
-  let encoded = Buffer.from(data).toString("base64");
-  return encoded.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+function base64urlDecode(encoded) {
+  // Convert back to standard Base64 alphabet
+  encoded = encoded.replace(/-/g, "+").replace(/_/g, "/");
+
+  // Re-add padding if necessary
+  while (encoded.length % 4 !== 0) {
+    encoded += "=";
+  }
+
+  return Buffer.from(encoded, "base64");
 }
 
 app.get("/yey", async (req, res) => {
   const reduced = await pay01ErgFromAddress();
-  const encoded = base64urlEncode(reduced);
+  const encoded = base64urlDecode(reduced);
   res.setHeader("Content-Type", "application/json");
   res.send(JSON.stringify({ reducedTx: encoded }));
 });
