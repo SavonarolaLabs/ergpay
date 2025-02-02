@@ -25,16 +25,13 @@ import {
   }
 
   function base64urlEncode(raw) {
-	// raw is a Buffer or a string
 	const buf = Buffer.isBuffer(raw) ? raw : Buffer.from(raw);
-	// standard Base64
 	let encoded = buf.toString("base64");
-	// replace + and / with - and _
 	encoded = encoded.replace(/\+/g, "-").replace(/\//g, "_");
-	// remove trailing '='
 	encoded = encoded.replace(/=+$/, "");
 	return encoded;
   }
+  
   
   
   // Example input box
