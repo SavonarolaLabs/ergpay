@@ -4,24 +4,14 @@ import {
 	ReducedTransaction
   } from 'ergo-lib-wasm-nodejs';
   import { RECOMMENDED_MIN_FEE_VALUE, TransactionBuilder } from '@fleet-sdk/core';
-  import { createContext } from './fakeContext.js';
+  import { fakeContext } from './fakeContext.js';
   
-  /**
-   * Converts an unsigned EIP-12 transaction to a ReducedTransaction,
-   * then returns its serialized bytes (as a base64 string).
-   */
   export async function reducedFromUnsignedTx(unsignedTx) {
-	// 1) Prepare input & data boxes
 	const inputBoxes = ErgoBoxes.from_boxes_json(unsignedTx.inputs);
 	const dataBoxes = ErgoBoxes.from_boxes_json(unsignedTx.dataInputs);
-  
-	// 2) Recreate the UnsignedTransaction from EIP-12 JSON
 	const wasmUnsignedTx = UnsignedTransaction.from_json(JSON.stringify(unsignedTx));
+	const context = await fakeContext();
   
-	// 3) Create or load the context. Adjust block height as needed
-	const context = await createContext(1452652);
-  
-	// 4) Build a real ReducedTransaction from the unsignedTx
 	const reduced = ReducedTransaction.from_unsigned_tx(
 	  wasmUnsignedTx,
 	  inputBoxes,
@@ -29,13 +19,23 @@ import {
 	  context
 	);
   
-	// 5) Convert the reduced transaction to raw bytes
-	const rawBytes = reduced.sigma_serialize_bytes(); // returns a Uint8Array
-  
-	// 6) Return standard base64 (with `+`, `/`, and `=` padding)
-	const base64 = Buffer.from(rawBytes).toString("base64");
+	const rawBytes = reduced.sigma_serialize_bytes();
+	const base64 = base64urlEncode(rawBytes);
 	return base64;
   }
+
+  function base64urlEncode(raw) {
+	// raw is a Buffer or a string
+	const buf = Buffer.isBuffer(raw) ? raw : Buffer.from(raw);
+	// standard Base64
+	let encoded = buf.toString("base64");
+	// replace + and / with - and _
+	encoded = encoded.replace(/\+/g, "-").replace(/\//g, "_");
+	// remove trailing '='
+	encoded = encoded.replace(/=+$/, "");
+	return encoded;
+  }
+  
   
   // Example input box
   export const fakeUserBox = {
@@ -55,12 +55,8 @@ import {
   
   const height = 1000;
   const userChangeAddress = fakeUserBox.address;
-  
-  /**
-   * Builds a minimal transaction, then returns its reduced Tx as base64.
-   */
+
   export async function pay01ErgFromAddress(address = userChangeAddress) {
-	// 1) Build an unsigned transaction in EIP-12 format
 	const unsignedTx = new TransactionBuilder(height)
 	  .from([fakeUserBox])
 	  .payFee(RECOMMENDED_MIN_FEE_VALUE)
@@ -68,7 +64,6 @@ import {
 	  .build()
 	  .toEIP12Object();
   
-	// 2) Convert that unsigned Tx to a base64-encoded ReducedTransaction
 	return await reducedFromUnsignedTx(unsignedTx);
   }
   
