@@ -50,6 +50,6 @@ export function pay01ErgFromAddress(address = userChangeAddress) {
 	.payFee(RECOMMENDED_MIN_FEE_VALUE)
 	.sendChangeTo(address)
 	.build()
-	.toEIP12Object();
+	.toPlainObject();
 	return reducedFromUnsignedTx(unsignedTx);
 }
