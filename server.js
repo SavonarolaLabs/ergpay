@@ -2,6 +2,7 @@ import express from "express";
 import { readFile } from "fs/promises";
 import { createServer } from "https";
 import { pay01ErgFromAddress } from "./lib.js";
+import { encode } from "base64-url";
 
 const app = express();
 
@@ -23,8 +24,9 @@ app.get("/", (req, res) => {
   `);
 });
 
-app.get("/yey", async(req, res) => {
-  res.json({ reducedTx: await pay01ErgFromAddress() });
+app.get("/yey", async (req, res) => {
+  const reduced = await pay01ErgFromAddress();
+  res.json({ reducedTx: encode(JSON.stringify(reduced)) });
 });
 
 app.get("/ney/:p2pk", (req, res) => {
