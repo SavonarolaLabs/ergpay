@@ -3,10 +3,10 @@ import {
 	UnsignedTransaction,
 	ReducedTransaction
 } from 'ergo-lib-wasm-nodejs';
-import { OutputBuilder, RECOMMENDED_MIN_FEE_VALUE, TransactionBuilder } from '@fleet-sdk/core';
+import {RECOMMENDED_MIN_FEE_VALUE, TransactionBuilder } from '@fleet-sdk/core';
 
 
-import { fakeContextX } from './fakeContext.js';
+import { fakeContext } from './fakeContext.js';
 
 /**
  * Converts an unsigned EIP-12 transaction into a ReducedTransaction.
@@ -20,7 +20,7 @@ export function reducedFromUnsignedTx(unsignedTx) {
 	const inputBoxes = ErgoBoxes.from_boxes_json(unsignedTx.inputs);
 	const dataBoxes = ErgoBoxes.from_boxes_json(unsignedTx.dataInputs);
 	const wasmUnsignedTx = UnsignedTransaction.from_json(JSON.stringify(unsignedTx));
-	const context = fakeContextX();
+	const context = fakeContext();
 	const reduced = ReducedTransaction.from_unsigned_tx(
 		wasmUnsignedTx,
 		inputBoxes,
@@ -47,6 +47,18 @@ export const fakeUserBox = {
 
 const userChangeAddress = '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU';
 const height = 1000;
+
+export function unsignedTx(address = userChangeAddress) {
+	const unsignedTx = new TransactionBuilder(height)
+	.from([fakeUserBox])
+	.payFee(RECOMMENDED_MIN_FEE_VALUE)
+	.sendChangeTo(address)
+	.build()
+	.toEIP12Object();
+
+	return unsignedTx;
+}
+
 
 export function pay01ErgFromAddress(address = userChangeAddress) {
 	const unsignedTx = new TransactionBuilder(height)

@@ -44,3 +44,4 @@ coverage/
 # Misc
 *.bak
 *.tmp
+mnemonic.js
