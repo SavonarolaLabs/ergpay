@@ -3,6 +3,7 @@
     "@fleet-sdk/common": "^0.8.0",
     "@fleet-sdk/core": "^0.8.2",
     "ergo-lib-wasm-nodejs": "^0.28.0",
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "vitest": "^3.0.4"
   }
 }

@@ -26,8 +26,8 @@ export function reducedFromUnsignedTx(unsignedTx) {
 		inputBoxes,
 		dataBoxes,
 		context
-	);
-	return JSON.parse(reduced.unsigned_tx().to_json())
+	)
+	return reduced.unsigned_tx().to_js_eip12()
 }
 
 export const fakeUserBox = {
@@ -49,7 +49,8 @@ export function pay01ErgFromAddress(address = userChangeAddress) {
 	.from([fakeUserBox])
 	.payFee(RECOMMENDED_MIN_FEE_VALUE)
 	.sendChangeTo(address)
-	.build();
+	.build()
+	.toEIP12Object();
 
 	return reducedFromUnsignedTx(unsignedTx);
 }
