@@ -27,7 +27,7 @@ export async function reducedFromUnsignedTx(unsignedTx) {
 		dataBoxes,
 		context
 	)
-	return reduced.unsigned_tx().to_js_eip12()
+	return reduced.unsigned_tx().to_json()
 }
 
 export const fakeUserBox = {
