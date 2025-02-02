@@ -13,7 +13,7 @@ import {
    * and returns its raw serialized bytes as a Buffer.
    *
    * @param {Object} unsignedTx - The unsigned transaction in EIP-12 format.
-   * @returns {Buffer} A Buffer containing the raw bytes of the ReducedTransaction.
+   * @returns {string} A Buffer containing the raw bytes of the ReducedTransaction.
    */
   export async function reducedFromUnsignedTx(unsignedTx) {
 	// 1) Convert EIP-12 inputs/dataInputs to wasm structures
@@ -38,7 +38,9 @@ import {
   
 	// 5) Return the serialized bytes (not JSON).
 	//    The wallet needs this raw binary to properly sign.
-	return Buffer.from(reduced.sigma_serialize_bytes());
+	const rawBytes = reduced.sigma_serialize_bytes(); // Uint8Array
+const base64 = Buffer.from(rawBytes).toString("base64"); 
+return base64;
   }
   
   // Example input box

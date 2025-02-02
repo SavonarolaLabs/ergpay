@@ -36,11 +36,10 @@ app.get("/yey", async (req, res) => {
     const reducedBytes = await pay01ErgFromAddress();
 
     // 2) Encode in standard Base64
-    const encoded = base64Encode(reducedBytes);
 
     // 3) Send JSON with "reducedTx" property
     res.setHeader("Content-Type", "application/json");
-    res.json({ reducedTx: encoded });
+    res.json({ reducedTx: reducedBytes });
   } catch (err) {
     console.error("Error in /yey:", err);
     res.status(500).json({ error: String(err) });
