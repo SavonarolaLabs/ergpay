@@ -20,18 +20,24 @@ import {
 	);
   
 	const rawBytes = reduced.sigma_serialize_bytes();
-	const base64 = base64EncodeStandard(rawBytes);
+	console.log({rawBytes});
+	const base64 = uint8ArrayToBase64UrlSafe(rawBytes);
 	return base64;
   }
 
-  function base64EncodeStandard(data) {
-	// Convert data to Buffer if needed
-	const buf = Buffer.isBuffer(data) ? data : Buffer.from(data);
-	// This yields the standard Base64 string (with +, /, and = padding)
-	return buf.toString("base64");
-  }
-  
-  
+// Standard base64, no replacements:
+function uint8ArrayToBase64UrlSafe(uint8Array) {
+    let base64 = btoa(String.fromCharCode(...uint8Array))
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_');
+
+    while (base64.length % 4 !== 0) {
+        base64 += '=';
+    }
+    
+    return base64;
+}
+
   
   
   // Example input box
