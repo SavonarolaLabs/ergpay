@@ -4,8 +4,8 @@ import { signTx } from "./signing.js";
 import { BOB_MNEMONIC } from "./mnemonic.js";
 
 describe("pay01ErgFromAddress", () => {
-  it("should return a valid transaction", () => {
-    const result = pay01ErgFromAddress();
+  it("should return a valid transaction", async() => {
+    const result = await pay01ErgFromAddress();
     console.log(result); // Optional: logs output for debugging
     expect(result).toBeDefined();
 

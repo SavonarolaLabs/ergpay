@@ -6,7 +6,7 @@ import {
 import {RECOMMENDED_MIN_FEE_VALUE, TransactionBuilder } from '@fleet-sdk/core';
 
 
-import { fakeContext } from './fakeContext.js';
+import { createContext, fakeContext } from './fakeContext.js';
 
 /**
  * Converts an unsigned EIP-12 transaction into a ReducedTransaction.
@@ -16,11 +16,11 @@ import { fakeContext } from './fakeContext.js';
  * @param {Array<Object>} unsignedTx.dataInputs - The data boxes of the transaction.
  * @returns {ReducedTransaction} The reduced transaction ready for signing.
  */
-export function reducedFromUnsignedTx(unsignedTx) {
+export async function reducedFromUnsignedTx(unsignedTx) {
 	const inputBoxes = ErgoBoxes.from_boxes_json(unsignedTx.inputs);
 	const dataBoxes = ErgoBoxes.from_boxes_json(unsignedTx.dataInputs);
 	const wasmUnsignedTx = UnsignedTransaction.from_json(JSON.stringify(unsignedTx));
-	const context = fakeContext();
+	const context = await createContext(1452652);
 	const reduced = ReducedTransaction.from_unsigned_tx(
 		wasmUnsignedTx,
 		inputBoxes,
@@ -60,7 +60,7 @@ export function unsignedTx(address = userChangeAddress) {
 }
 
 
-export function pay01ErgFromAddress(address = userChangeAddress) {
+export async function pay01ErgFromAddress(address = userChangeAddress) {
 	const unsignedTx = new TransactionBuilder(height)
 	.from([fakeUserBox])
 	.payFee(RECOMMENDED_MIN_FEE_VALUE)
@@ -68,5 +68,5 @@ export function pay01ErgFromAddress(address = userChangeAddress) {
 	.build()
 	.toEIP12Object();
 
-	return reducedFromUnsignedTx(unsignedTx);
+	return await reducedFromUnsignedTx(unsignedTx);
 }
