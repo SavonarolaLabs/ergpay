@@ -6,14 +6,12 @@ import { pay01ErgFromAddress } from "./lib.js";
 const app = express();
 
 /**
- * Encode raw bytes into **standard** Base64, with '+', '/', and '=' padding.
- * This yields strings whose length is always a multiple of 4.
+ * Classic Base64 with '=' padding and '+' / '/' 
+ * Guaranteed multiple of 4 in length.
  */
 function base64Encode(data) {
-  // If `data` is not already a Buffer, convert it
-  const buff = Buffer.isBuffer(data) ? data : Buffer.from(data);
-  // Return standard Base64 (e.g. "abcd+/==")
-  return buff.toString("base64");
+  // If `data` is already a Buffer, great; if not, convert it
+  return Buffer.from(data).toString("base64");
 }
 
 app.get("/", (req, res) => {
@@ -36,20 +34,19 @@ app.get("/", (req, res) => {
 
 app.get("/yey", async (req, res) => {
   try {
-    // 1. Get the raw transaction bytes (a Buffer) from your library
+    // 1) Grab your raw reduced transaction bytes
+    //    (make sure pay01ErgFromAddress returns a Buffer or string)
     const reduced = await pay01ErgFromAddress();
 
-    // 2. Encode them in standard Base64 WITH padding (nothing "URL-safe")
+    // 2) Encode it as STANDARD Base64 (with padding '=')
     const encoded = base64Encode(reduced);
 
-    console.log("Sending standard Base64:", encoded);
-
-    // 3. Return JSON with the "reducedTx" property
+    // 3) Send JSON with the padded Base64
     res.setHeader("Content-Type", "application/json");
-    res.send(JSON.stringify({ reducedTx: encoded }));
-  } catch (error) {
-    console.error("Error in /yey route:", error);
-    res.status(500).json({ error: String(error) });
+    res.json({ reducedTx: encoded });
+  } catch (err) {
+    console.error("Error in /yey:", err);
+    res.status(500).json({ error: String(err) });
   }
 });
 
