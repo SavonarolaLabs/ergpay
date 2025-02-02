@@ -23,8 +23,8 @@ app.get("/", (req, res) => {
   `);
 });
 
-app.get("/yey", (req, res) => {
-  res.json({ reducedTx: pay01ErgFromAddress() });
+app.get("/yey", async(req, res) => {
+  res.json({ reducedTx: await pay01ErgFromAddress() });
 });
 
 app.get("/ney/:p2pk", (req, res) => {
