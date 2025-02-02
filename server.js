@@ -33,8 +33,8 @@ app.get("/ney/:p2pk", (req, res) => {
 
 const PORT = 7777;
 const options = {
-  key: await readFile("/etc/caddy/privkey.pem"),
-  cert: await readFile("/etc/caddy/fullchain.pem")
+  key: await readFile("/etc/letsencrypt/live/ergfi.xyz/privkey.pem"),
+  cert: await readFile("/etc/letsencrypt/live/ergfi.xyz/fullchain.pem")
 };
 
 createServer(options, app).listen(PORT, "0.0.0.0", () => {
