@@ -1,5 +1,3 @@
-// lib.js
-
 import {
 	ErgoBoxes,
 	UnsignedTransaction,
@@ -9,26 +7,21 @@ import {
   import { createContext } from './fakeContext.js';
   
   /**
-   * Converts an unsigned EIP-12 transaction (JSON) into a real ReducedTransaction
-   * and returns its raw serialized bytes as a Buffer.
-   *
-   * @param {Object} unsignedTx - The unsigned transaction in EIP-12 format.
-   * @returns {string} A Buffer containing the raw bytes of the ReducedTransaction.
+   * Converts an unsigned EIP-12 transaction to a ReducedTransaction,
+   * then returns its serialized bytes (as a base64 string).
    */
   export async function reducedFromUnsignedTx(unsignedTx) {
-	// 1) Convert EIP-12 inputs/dataInputs to wasm structures
+	// 1) Prepare input & data boxes
 	const inputBoxes = ErgoBoxes.from_boxes_json(unsignedTx.inputs);
 	const dataBoxes = ErgoBoxes.from_boxes_json(unsignedTx.dataInputs);
   
-	// 2) Convert EIP-12 JSON to a wasm UnsignedTransaction
-	const wasmUnsignedTx = UnsignedTransaction.from_json(
-	  JSON.stringify(unsignedTx)
-	);
+	// 2) Recreate the UnsignedTransaction from EIP-12 JSON
+	const wasmUnsignedTx = UnsignedTransaction.from_json(JSON.stringify(unsignedTx));
   
-	// 3) Create the context (substitute block height / state values as needed)
+	// 3) Create or load the context. Adjust block height as needed
 	const context = await createContext(1452652);
   
-	// 4) Build the actual ReducedTransaction
+	// 4) Build a real ReducedTransaction from the unsignedTx
 	const reduced = ReducedTransaction.from_unsigned_tx(
 	  wasmUnsignedTx,
 	  inputBoxes,
@@ -36,11 +29,12 @@ import {
 	  context
 	);
   
-	// 5) Return the serialized bytes (not JSON).
-	//    The wallet needs this raw binary to properly sign.
-	const rawBytes = reduced.sigma_serialize_bytes(); // Uint8Array
-const base64 = Buffer.from(rawBytes).toString("base64"); 
-return base64;
+	// 5) Convert the reduced transaction to raw bytes
+	const rawBytes = reduced.sigma_serialize_bytes(); // returns a Uint8Array
+  
+	// 6) Return standard base64 (with `+`, `/`, and `=` padding)
+	const base64 = Buffer.from(rawBytes).toString("base64");
+	return base64;
   }
   
   // Example input box
@@ -59,15 +53,14 @@ return base64;
 	index: 0
   };
   
-  const userChangeAddress = fakeUserBox.address;
   const height = 1000;
+  const userChangeAddress = fakeUserBox.address;
   
   /**
-   * Builds a minimal transaction, converts it to EIP-12,
-   * then reduces it, returning raw bytes for the wallet to sign.
+   * Builds a minimal transaction, then returns its reduced Tx as base64.
    */
   export async function pay01ErgFromAddress(address = userChangeAddress) {
-	// 1) Build an unsigned transaction with Fleet
+	// 1) Build an unsigned transaction in EIP-12 format
 	const unsignedTx = new TransactionBuilder(height)
 	  .from([fakeUserBox])
 	  .payFee(RECOMMENDED_MIN_FEE_VALUE)
@@ -75,7 +68,7 @@ return base64;
 	  .build()
 	  .toEIP12Object();
   
-	// 2) Reduce to raw bytes
+	// 2) Convert that unsigned Tx to a base64-encoded ReducedTransaction
 	return await reducedFromUnsignedTx(unsignedTx);
   }
   

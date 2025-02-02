@@ -1,16 +1,9 @@
-// server.js
-
 import express from "express";
 import { readFile } from "fs/promises";
 import { createServer } from "https";
 import { pay01ErgFromAddress } from "./lib.js";
 
 const app = express();
-
-/** Classic Base64 encoder with `=` padding and `+`/`/` */
-function base64Encode(buf) {
-  return buf.toString('base64');
-}
 
 app.get("/", (req, res) => {
   res.send(`
@@ -32,14 +25,13 @@ app.get("/", (req, res) => {
 
 app.get("/yey", async (req, res) => {
   try {
-    // 1) Retrieve the raw ReducedTransaction bytes
-    const reducedBytes = await pay01ErgFromAddress();
+    // 1) Obtain a standard base64-encoded reduced transaction
+    const reducedBase64 = await pay01ErgFromAddress();
 
-    // 2) Encode in standard Base64
-
-    // 3) Send JSON with "reducedTx" property
+    // 2) Send JSON with "reducedTx" property
+    //    The wallet will decode this from base64
     res.setHeader("Content-Type", "application/json");
-    res.json({ reducedTx: reducedBytes });
+    res.json({ reducedTx: reducedBase64 });
   } catch (err) {
     console.error("Error in /yey:", err);
     res.status(500).json({ error: String(err) });
@@ -50,7 +42,7 @@ app.get("/ney/:p2pk", (req, res) => {
   res.json({ message: req.params.p2pk, messageSeverity: "ERROR" });
 });
 
-// HTTPS server
+// Start an HTTPS server
 const PORT = 7777;
 const options = {
   key: await readFile("/etc/letsencrypt/live/ergfi.xyz/privkey.pem"),
