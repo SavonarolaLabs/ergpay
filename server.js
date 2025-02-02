@@ -1,9 +1,9 @@
 import express from "express";
+import { readFile } from "fs/promises";
+import { createServer } from "https";
 import { pay01ErgFromAddress } from "./lib.js";
 
 const app = express();
-const PORT = 7777;
-const HOST = "0.0.0.0";
 
 app.get("/", (req, res) => {
   res.send(`
@@ -31,4 +31,12 @@ app.get("/ney/:p2pk", (req, res) => {
   res.json({ message: req.params.p2pk, messageSeverity: "ERROR" });
 });
 
-app.listen(PORT, HOST, () => console.log(`Server running on http://${HOST}:${PORT}`));
+const PORT = 7777;
+const options = {
+  key: await readFile("/etc/caddy/privkey.pem"),
+  cert: await readFile("/etc/caddy/fullchain.pem")
+};
+
+createServer(options, app).listen(PORT, "0.0.0.0", () => {
+  console.log(`HTTPS server running on port ${PORT}`);
+});
