@@ -31,26 +31,18 @@ export function reducedFromUnsignedTx(unsignedTx) {
 }
 
 export const fakeUserBox = {
-	"boxId": "1ab9da11fc216660e974842cc3b7705e62ebb9e0bf5ff78e53f9cd40abadd117",
-	"value": 147,
-	"ergoTree": "0008cd0336100ef59ced80ba5f89c4178ebd57b6c1dd0f3d135ee1db9f62fc634d637041",
-	"creationHeight": 9149,
-	"assets": [
-	  {
-		"tokenId": "4ab9da11fc216660e974842cc3b7705e62ebb9e0bf5ff78e53f9cd40abadd117",
-		"amount": 1000
-	  }
-	],
-	"additionalRegisters": {
-	  "R4": "100204a00b08cd0336100ef59ced80ba5f89c4178ebd57b6c1dd0f3d135ee1db9f62fc634d637041ea02d192a39a8cc7a70173007301"
-	},
-	"transactionId": "2ab9da11fc216660e974842cc3b7705e62ebb9e0bf5ff78e53f9cd40abadd117",
-	"index": 0,
-	"address": "3WwbzW6u8hKWBcL1W7kNVMr25s2UHfSBnYtwSHvrRQt7DdPuoXrt",
-	"spentTransactionId": "3ab9da11fc216660e974842cc3b7705e62ebb9e0bf5ff78e53f9cd40abadd117",
-	"spendingHeight": 147,
-	"inclusionHeight": 147,
-	"globalIndex": 83927
+    "globalIndex": 45787878,
+    "inclusionHeight": 1443467,
+    "address": "9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU",
+    "spentTransactionId": null,
+    "boxId": "807e715029f3efba60ccf3a0f998ba025de1c22463c26db53287849ae4e31d3b",
+    "value": 602310307,
+    "ergoTree": "0008cd0233e9a9935c8bbb8ae09b2c944c1d060492a8832252665e043b0732bdf593bf2c",
+    "assets": [],
+    "creationHeight": 1443463,
+    "additionalRegisters": {},
+    "transactionId": "180a362bee63b7a36aad554493df07fe9abe59dc53e1a6266f6584e49e470e3c",
+    "index": 0
   };
 
 const userChangeAddress = '9euvZDx78vhK5k1wBXsNvVFGc5cnoSasnXCzANpaawQveDCHLbU';
