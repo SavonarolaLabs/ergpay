@@ -1,3 +1,5 @@
+// server.js
+
 import express from "express";
 import { readFile } from "fs/promises";
 import { createServer } from "https";
@@ -5,39 +7,38 @@ import { pay01ErgFromAddress } from "./lib.js";
 
 const app = express();
 
+/** Classic Base64 encoder with `=` padding and `+`/`/` */
 function base64Encode(buf) {
-  // Standard Base64 with '=' padding
-  return buf.toString('base64')
+  return buf.toString('base64');
 }
 
 app.get("/", (req, res) => {
   res.send(`
-    <html>
-      <body>
-        <script>
-          document.addEventListener("DOMContentLoaded", () => {
-            const url = window.location.host + "/yey";
-            const ergopayLink = document.createElement("a");
-            ergopayLink.href = "ergopay://" + url;
-            ergopayLink.innerText = "Open ErgoPay";
-            document.body.appendChild(ergopayLink);
-          });
-        </script>
-      </body>
-    </html>
+<html>
+  <body>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const url = window.location.host + "/yey";
+        const ergopayLink = document.createElement("a");
+        ergopayLink.href = "ergopay://" + url;
+        ergopayLink.innerText = "Open ErgoPay";
+        document.body.appendChild(ergopayLink);
+      });
+    </script>
+  </body>
+</html>
   `);
 });
 
 app.get("/yey", async (req, res) => {
   try {
-    // 1) Grab your raw reduced transaction bytes
-    //    (make sure pay01ErgFromAddress returns a Buffer or string)
-    const reduced = await pay01ErgFromAddress();
+    // 1) Retrieve the raw ReducedTransaction bytes
+    const reducedBytes = await pay01ErgFromAddress();
 
-    // 2) Encode it as STANDARD Base64 (with padding '=')
-    const encoded = base64Encode(reduced);
+    // 2) Encode in standard Base64
+    const encoded = base64Encode(reducedBytes);
 
-    // 3) Send JSON with the padded Base64
+    // 3) Send JSON with "reducedTx" property
     res.setHeader("Content-Type", "application/json");
     res.json({ reducedTx: encoded });
   } catch (err) {
@@ -50,6 +51,7 @@ app.get("/ney/:p2pk", (req, res) => {
   res.json({ message: req.params.p2pk, messageSeverity: "ERROR" });
 });
 
+// HTTPS server
 const PORT = 7777;
 const options = {
   key: await readFile("/etc/letsencrypt/live/ergfi.xyz/privkey.pem"),
