@@ -30,10 +30,11 @@ app.get("/", (req, res) => {
 app.get("/yey", async (req, res) => {
   const reduced = await pay01ErgFromAddress();
   const encoded = Buffer.from(reduced).toString("base64url");
-  console.log(encoded);
+  const response  = JSON.stringify({ reducedTx: encoded })
+  console.log(response);
 
   res.setHeader("Content-Type", "application/json");
-  res.send(JSON.stringify({ reducedTx: encoded }));
+  res.send(response);
 });
 
 
