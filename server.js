@@ -27,16 +27,17 @@ app.get("/", (req, res) => {
 });
 
 
+function base64urlEncode(data) {
+  let encoded = Buffer.from(data).toString("base64");
+  return encoded.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
 app.get("/yey", async (req, res) => {
   const reduced = await pay01ErgFromAddress();
-  const encoded = Buffer.from(reduced).toString("base64url");
-  const response  = JSON.stringify({ reducedTx: encoded })
-  console.log(response);
-
+  const encoded = base64urlEncode(reduced);
   res.setHeader("Content-Type", "application/json");
-  res.send(response);
+  res.send(JSON.stringify({ reducedTx: encoded }));
 });
-
 
 app.get("/ney/:p2pk", (req, res) => {
   res.json({ message: req.params.p2pk, messageSeverity: "ERROR" });
