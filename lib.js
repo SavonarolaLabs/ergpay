@@ -20,7 +20,7 @@ import {
 	);
   
 	const rawBytes = reduced.sigma_serialize_bytes();
-	const base64 = base64urlEncode(rawBytes);
+	const base64 = base64EncodeStandard(rawBytes);
 	return base64;
   }
 
