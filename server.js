@@ -6,22 +6,14 @@ import { pay01ErgFromAddress } from "./lib.js";
 const app = express();
 
 /**
- * Encode raw bytes into URL-safe Base64, same as Java's Base64.getUrlEncoder().
- * 1) Use standard Base64.
- * 2) Replace '+' with '-' and '/' with '_'.
- * 3) Strip trailing '=' padding.
+ * Encode raw bytes into **standard** Base64, with '+', '/', and '=' padding.
+ * This yields strings whose length is always a multiple of 4.
  */
-function base64urlEncode(data) {
-  // Make sure we have a Buffer
-  const buf = Buffer.isBuffer(data) ? data : Buffer.from(data);
-
-  // 1) Standard Base64
-  let encoded = buf.toString("base64");
-  // 2) Replace + with -, / with _
-  encoded = encoded.replace(/\+/g, "-").replace(/\//g, "_");
-  // 3) Remove trailing '='
-  encoded = encoded.replace(/=+$/, "");
-  return encoded;
+function base64Encode(data) {
+  // If `data` is not already a Buffer, convert it
+  const buff = Buffer.isBuffer(data) ? data : Buffer.from(data);
+  // Return standard Base64 (e.g. "abcd+/==")
+  return buff.toString("base64");
 }
 
 app.get("/", (req, res) => {
@@ -44,20 +36,20 @@ app.get("/", (req, res) => {
 
 app.get("/yey", async (req, res) => {
   try {
-    // get the reduced transaction bytes (Buffer) from your library
+    // 1. Get the raw transaction bytes (a Buffer) from your library
     const reduced = await pay01ErgFromAddress();
-    
-    // encode them as URL-safe Base64
-    const encoded = base64urlEncode(reduced);
 
-    console.log("Encoded reducedTx:", encoded);
+    // 2. Encode them in standard Base64 WITH padding (nothing "URL-safe")
+    const encoded = base64Encode(reduced);
 
-    // respond with JSON
+    console.log("Sending standard Base64:", encoded);
+
+    // 3. Return JSON with the "reducedTx" property
     res.setHeader("Content-Type", "application/json");
     res.send(JSON.stringify({ reducedTx: encoded }));
-  } catch (err) {
-    console.error("Error in /yey route:", err);
-    res.status(500).json({ error: String(err) });
+  } catch (error) {
+    console.error("Error in /yey route:", error);
+    res.status(500).json({ error: String(error) });
   }
 });
 
