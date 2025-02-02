@@ -42,6 +42,7 @@ function base64urlDecode(encoded) {
 app.get("/yey", async (req, res) => {
   const reduced = await pay01ErgFromAddress();
   const encoded = base64urlDecode(reduced);
+  console.log(encoded)
   res.setHeader("Content-Type", "application/json");
   res.send(JSON.stringify({ reducedTx: encoded }));
 });
