@@ -27,7 +27,7 @@ export async function reducedFromUnsignedTx(unsignedTx) {
 		dataBoxes,
 		context
 	)
-	return reduced.unsigned_tx().sigma_serialize_bytes();
+	return reduced.sigma_serialize_bytes()
 }
 
 export const fakeUserBox = {
