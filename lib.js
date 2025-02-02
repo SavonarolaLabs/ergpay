@@ -24,13 +24,13 @@ import {
 	return base64;
   }
 
-  function base64urlEncode(raw) {
-	const buf = Buffer.isBuffer(raw) ? raw : Buffer.from(raw);
-	let encoded = buf.toString("base64");
-	encoded = encoded.replace(/\+/g, "-").replace(/\//g, "_");
-	encoded = encoded.replace(/=+$/, "");
-	return encoded;
+  function base64EncodeStandard(data) {
+	// Convert data to Buffer if needed
+	const buf = Buffer.isBuffer(data) ? data : Buffer.from(data);
+	// This yields the standard Base64 string (with +, /, and = padding)
+	return buf.toString("base64");
   }
+  
   
   
   
