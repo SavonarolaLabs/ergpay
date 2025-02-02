@@ -2,7 +2,6 @@ import express from "express";
 import { readFile } from "fs/promises";
 import { createServer } from "https";
 import { pay01ErgFromAddress } from "./lib.js";
-import base64url from "base64url";
 
 
 
@@ -29,7 +28,7 @@ app.get("/", (req, res) => {
 
 app.get("/yey", async (req, res) => {
   const reduced = await pay01ErgFromAddress();
-  const encoded = base64url.encode(Buffer.from(reduced));
+  const encoded = Buffer.from(reduced).toString("base64url");
   res.json({ reducedTx: encoded });
 });
 
