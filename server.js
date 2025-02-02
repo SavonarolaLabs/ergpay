@@ -5,13 +5,9 @@ import { pay01ErgFromAddress } from "./lib.js";
 
 const app = express();
 
-/**
- * Classic Base64 with '=' padding and '+' / '/' 
- * Guaranteed multiple of 4 in length.
- */
-function base64Encode(data) {
-  // If `data` is already a Buffer, great; if not, convert it
-  return Buffer.from(data).toString("base64");
+function base64Encode(buf) {
+  // Standard Base64 with '=' padding
+  return buf.toString('base64')
 }
 
 app.get("/", (req, res) => {
