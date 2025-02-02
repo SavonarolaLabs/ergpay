@@ -3,10 +3,26 @@ import { readFile } from "fs/promises";
 import { createServer } from "https";
 import { pay01ErgFromAddress } from "./lib.js";
 
-
-
-
 const app = express();
+
+/**
+ * Encode raw bytes into URL-safe Base64, same as Java's Base64.getUrlEncoder().
+ * 1) Use standard Base64.
+ * 2) Replace '+' with '-' and '/' with '_'.
+ * 3) Strip trailing '=' padding.
+ */
+function base64urlEncode(data) {
+  // Make sure we have a Buffer
+  const buf = Buffer.isBuffer(data) ? data : Buffer.from(data);
+
+  // 1) Standard Base64
+  let encoded = buf.toString("base64");
+  // 2) Replace + with -, / with _
+  encoded = encoded.replace(/\+/g, "-").replace(/\//g, "_");
+  // 3) Remove trailing '='
+  encoded = encoded.replace(/=+$/, "");
+  return encoded;
+}
 
 app.get("/", (req, res) => {
   res.send(`
@@ -26,25 +42,23 @@ app.get("/", (req, res) => {
   `);
 });
 
-
-function base64urlDecode(encoded) {
-  // Convert back to standard Base64 alphabet
-  encoded = encoded.replace(/-/g, "+").replace(/_/g, "/");
-
-  // Re-add padding if necessary
-  while (encoded.length % 4 !== 0) {
-    encoded += "=";
-  }
-
-  return Buffer.from(encoded, "base64");
-}
-
 app.get("/yey", async (req, res) => {
-  const reduced = await pay01ErgFromAddress();
-  const encoded = base64urlDecode(reduced);
-  console.log(encoded)
-  res.setHeader("Content-Type", "application/json");
-  res.send(JSON.stringify({ reducedTx: encoded }));
+  try {
+    // get the reduced transaction bytes (Buffer) from your library
+    const reduced = await pay01ErgFromAddress();
+    
+    // encode them as URL-safe Base64
+    const encoded = base64urlEncode(reduced);
+
+    console.log("Encoded reducedTx:", encoded);
+
+    // respond with JSON
+    res.setHeader("Content-Type", "application/json");
+    res.send(JSON.stringify({ reducedTx: encoded }));
+  } catch (err) {
+    console.error("Error in /yey route:", err);
+    res.status(500).json({ error: String(err) });
+  }
 });
 
 app.get("/ney/:p2pk", (req, res) => {
