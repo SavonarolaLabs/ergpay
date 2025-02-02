@@ -24,7 +24,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/yey", async(req, res) => {
-  res.json({ reducedTx: await pay01ErgFromAddress() });
+  res.json({ transaction: await pay01ErgFromAddress() });
 });
 
 app.get("/ney/:p2pk", (req, res) => {
