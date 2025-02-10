@@ -1,10 +1,11 @@
 import express from "express";
 import { readFile } from "fs/promises";
 import { createServer } from "https";
-import { execFile } from "child_process";
+import { exec } from "child_process";
 
 const app = express();
-const SCRIPT_PATH = "../ergfi/src/lib/ergopay/ergopaySwap.cli.ts";
+const SCRIPT_PATH = "src/lib/ergopay/ergopaySwap.cli.ts";
+const PROJECT_DIR = "../ergfi";
 const swapRequestParams =
 	"swapPair=ERG/SIGUSD&amount=100&ePayLinkId=abcd1234&lastInput=xyz789&payerAddress=%23P2PK_ADDRESS%23&feeMining=0.01";
 
@@ -39,28 +40,21 @@ app.get("/swap/", async (req, res) => {
 
 		console.log("Received swap params:", params);
 
-		execFile(
-			"bun",
-			["run", SCRIPT_PATH, params],
-			{ cwd: "../ergfi" },
-			(error, stdout, stderr) => {
-				if (error) {
-					console.error("Error executing script:", stderr);
-					return res
-						.status(500)
-						.json({ error: stderr || error.message });
-				}
-				try {
-					const result = JSON.parse(stdout);
-					res.json(result);
-				} catch (parseError) {
-					console.error("Error parsing script output:", stdout);
-					res.status(500).json({
-						error: "Invalid response from script",
-					});
-				}
+		const command = `cd ${PROJECT_DIR} && bun run ${SCRIPT_PATH} '${params}'`;
+
+		exec(command, (error, stdout, stderr) => {
+			if (error) {
+				console.error("Error executing script:", stderr);
+				return res.status(500).json({ error: stderr || error.message });
 			}
-		);
+			try {
+				const result = JSON.parse(stdout);
+				res.json(result);
+			} catch (parseError) {
+				console.error("Error parsing script output:", stdout);
+				res.status(500).json({ error: "Invalid response from script" });
+			}
+		});
 	} catch (err) {
 		console.error("Error in /swap:", err);
 		res.status(500).json({ error: String(err) });
