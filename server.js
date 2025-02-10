@@ -39,19 +39,28 @@ app.get("/swap/", async (req, res) => {
 
 		console.log("Received swap params:", params);
 
-		execFile("bun", [SCRIPT_PATH, params], (error, stdout, stderr) => {
-			if (error) {
-				console.error("Error executing script:", stderr);
-				return res.status(500).json({ error: stderr || error.message });
+		execFile(
+			"bun",
+			["run", SCRIPT_PATH, params],
+			{ cwd: "../ergfi" },
+			(error, stdout, stderr) => {
+				if (error) {
+					console.error("Error executing script:", stderr);
+					return res
+						.status(500)
+						.json({ error: stderr || error.message });
+				}
+				try {
+					const result = JSON.parse(stdout);
+					res.json(result);
+				} catch (parseError) {
+					console.error("Error parsing script output:", stdout);
+					res.status(500).json({
+						error: "Invalid response from script",
+					});
+				}
 			}
-			try {
-				const result = JSON.parse(stdout);
-				res.json(result);
-			} catch (parseError) {
-				console.error("Error parsing script output:", stdout);
-				res.status(500).json({ error: "Invalid response from script" });
-			}
-		});
+		);
 	} catch (err) {
 		console.error("Error in /swap:", err);
 		res.status(500).json({ error: String(err) });
