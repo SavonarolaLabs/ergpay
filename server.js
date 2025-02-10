@@ -7,7 +7,7 @@ const app = express();
 const SCRIPT_PATH = "src/lib/ergopay/ergopaySwap.cli.ts";
 const PROJECT_DIR = "../ergfi";
 const swapRequestParams =
-	"swapPair=ERG/SIGUSD&amount=0.1&ePayLinkId=abcd1234&lastInput=ERG&payerAddress=#P2PK_ADDRESS#&feeMining=0.001";
+	"swapPair=ERG/SIGUSD&amount=1.1&ePayLinkId=abcd1234&lastInput=ERG&payerAddress=#P2PK_ADDRESS#&feeMining=0.001";
 
 app.get("/", (req, res) => {
 	res.send(`
