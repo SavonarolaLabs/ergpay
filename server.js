@@ -6,7 +6,7 @@ import { pay01ErgFromAddress } from "./lib.js";
 const app = express();
 
 const swapRequestParams =
-	"swapPair=ERG/SIGUSD&amount=100&ePayLinkId=abcd1234&lastInput=xyz789&payerAddress=#P2PK_ADDRESS#&feeMining=0.01&foo=bar";
+	"swapPair=ERG/SIGUSD&amount=100&ePayLinkId=abcd1234&lastInput=xyz789&payerAddress=#P2PK_ADDRESS#&feeMining=0.01";
 
 app.get("/", (req, res) => {
 	res.send(`
@@ -17,7 +17,7 @@ app.get("/", (req, res) => {
         const url = window.location.host + "/swap?${swapRequestParams}";
         const ergopayLink = document.createElement("a");
         ergopayLink.href = "ergopay://" + url;
-        ergopayLink.innerText = "Open ErgoPay";
+        ergopayLink.innerText = "Open ErgoPay with Address";
         document.body.appendChild(ergopayLink);
       });
     </script>
