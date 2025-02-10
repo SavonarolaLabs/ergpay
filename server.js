@@ -1,12 +1,12 @@
 import express from "express";
 import { readFile } from "fs/promises";
 import { createServer } from "https";
-import { pay01ErgFromAddress } from "./lib.js";
+import { run } from "../ergfi/src/lib/ergopay/ergopaySwap.cli.js";
 
 const app = express();
 
 const swapRequestParams =
-	"swapPair=ERG/SIGUSD&amount=100&ePayLinkId=abcd1234&lastInput=xyz789&payerAddress=#P2PK_ADDRESS#&feeMining=0.01";
+	"swapPair=ERG/SIGUSD&amount=100&ePayLinkId=abcd1234&lastInput=xyz789&payerAddress=%23P2PK_ADDRESS%23&feeMining=0.01";
 
 app.get("/", (req, res) => {
 	res.send(`
@@ -39,10 +39,10 @@ app.get("/swap/", async (req, res) => {
 
 		console.log("Received swap params:", params);
 
-		const reducedBase64 = await pay01ErgFromAddress();
+		const reducedTxResult = await run(params);
 
 		res.setHeader("Content-Type", "application/json");
-		res.json({ reducedTx: reducedBase64 });
+		res.json(reducedTxResult);
 	} catch (err) {
 		console.error("Error in /swap:", err);
 		res.status(500).json({ error: String(err) });
