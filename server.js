@@ -6,7 +6,7 @@ import { pay01ErgFromAddress } from "./lib.js";
 const app = express();
 
 const swapRequestParams =
-	"swapPair=ERG/SIGUSD&amount=100&ePayLinkId=abcd1234&lastInput=xyz789&payerAddress=%23P2PK_ADDRESS&feeMining=0.01";
+	"swapPair=ERG/SIGUSD&amount=100&ePayLinkId=abcd1234&lastInput=xyz789&payerAddress=#P2PK_ADDRESS#&feeMining=0.01";
 
 app.get("/", (req, res) => {
 	res.send(`
