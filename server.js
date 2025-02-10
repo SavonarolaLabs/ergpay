@@ -4,7 +4,7 @@ import { createServer } from "https";
 import { execFile } from "child_process";
 
 const app = express();
-const SCRIPT_PATH = "/home/node/ergfi/src/lib/ergopay/ergopaySwap.cli.ts";
+const SCRIPT_PATH = "../ergfi/src/lib/ergopay/ergopaySwap.cli.ts";
 const swapRequestParams =
 	"swapPair=ERG/SIGUSD&amount=100&ePayLinkId=abcd1234&lastInput=xyz789&payerAddress=%23P2PK_ADDRESS%23&feeMining=0.01";
 
