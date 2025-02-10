@@ -1,10 +1,10 @@
 import express from "express";
 import { readFile } from "fs/promises";
 import { createServer } from "https";
-import { run } from "../ergfi/src/lib/ergopay/ergopaySwap.cli.js";
+import { execFile } from "child_process";
 
 const app = express();
-
+const SCRIPT_PATH = "../ergfi/src/lib/ergopay/ergopaySwap.cli.ts";
 const swapRequestParams =
 	"swapPair=ERG/SIGUSD&amount=100&ePayLinkId=abcd1234&lastInput=xyz789&payerAddress=%23P2PK_ADDRESS%23&feeMining=0.01";
 
@@ -28,21 +28,30 @@ app.get("/", (req, res) => {
 
 app.get("/swap/", async (req, res) => {
 	try {
-		const params = {
+		const params = JSON.stringify({
 			swapPair: req.query.swapPair,
 			amount: Number(req.query.amount),
 			ePayLinkId: req.query.ePayLinkId,
 			lastInput: req.query.lastInput,
 			payerAddress: req.query.payerAddress,
 			feeMining: Number(req.query.feeMining),
-		};
+		});
 
 		console.log("Received swap params:", params);
 
-		const reducedTxResult = await run(params);
-
-		res.setHeader("Content-Type", "application/json");
-		res.json(reducedTxResult);
+		execFile("bun", [SCRIPT_PATH, params], (error, stdout, stderr) => {
+			if (error) {
+				console.error("Error executing script:", stderr);
+				return res.status(500).json({ error: stderr || error.message });
+			}
+			try {
+				const result = JSON.parse(stdout);
+				res.json(result);
+			} catch (parseError) {
+				console.error("Error parsing script output:", stdout);
+				res.status(500).json({ error: "Invalid response from script" });
+			}
+		});
 	} catch (err) {
 		console.error("Error in /swap:", err);
 		res.status(500).json({ error: String(err) });
