@@ -12,7 +12,7 @@ const swapRequestParams =
 app.get("/", (req, res) => {
 	res.send(`
 <html>
-  <body>
+  <body style="font-size:100px;">
     <script>
       document.addEventListener("DOMContentLoaded", () => {
         const url = window.location.host + "/swap?${swapRequestParams}";
